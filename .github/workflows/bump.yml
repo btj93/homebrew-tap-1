@@ -1,0 +1,20 @@
+# Keeps Casks/figstudio.rb on the latest pelvo/figstudio release. Runs every 6 hours and by hand.
+name: bump
+on:
+  schedule: [{cron: "17 */6 * * *"}]
+  workflow_dispatch: {inputs: {tag: {description: "release tag (default: latest)", required: false}}}
+permissions: {contents: write}
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    env: {GH_TOKEN: "${{ github.token }}"}
+    steps:
+      - uses: actions/checkout@v4
+      - run: scripts/bump.sh ${{ inputs.tag }}
+      - name: Commit
+        run: |
+          git diff --quiet && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "figstudio $(sed -n 's/.*version "\(.*\)"/\1/p' Casks/figstudio.rb)"
+          git push
