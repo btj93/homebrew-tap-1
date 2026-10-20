@@ -4,7 +4,8 @@
 set -eu
 cd "$(dirname "$0")/.."
 repo=pelvo/figstudio
-tag=${1:-$(gh release view -R "$repo" --json tagName -q .tagName)}
+tag=${1:-$(gh release view -R "$repo" --json tagName -q .tagName 2>/dev/null || true)}
+[ -n "$tag" ] || { echo "no release yet, nothing to bump"; exit 0; }
 zip="figstudio-$tag-macos-arm64.zip"
 sha=$(gh release download "$tag" -R "$repo" -p SHA256SUMS -O - | awk -v f="$zip" '$2==f {print $1}')
 [ -n "$sha" ] || { echo "no checksum for $zip in $tag" >&2; exit 1; }
