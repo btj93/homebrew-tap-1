@@ -13,15 +13,15 @@ cask "figstudio" do
   end
 
   depends_on arch: :arm64
-  depends_on macos: ">= :big_sur"
+  depends_on :macos
 
   app "figstudio.app"
   binary "#{appdir}/figstudio.app/Contents/MacOS/figstudio-cli", target: "figstudio-cli"
   binary "#{appdir}/figstudio.app/Contents/MacOS/figstudio-mcp", target: "figstudio-mcp"
 
   # The app is ad-hoc signed, not notarized: clear the download quarantine so it opens.
-  postflight do
-    system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{appdir}/figstudio.app"]
+  postflight_steps do
+    run "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "{{appdir}}/figstudio.app"]
   end
 
   zap trash: "~/Library/Application Support/figstudio"
