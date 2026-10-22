@@ -13,8 +13,9 @@ jobs:
       - run: scripts/bump.sh ${{ inputs.tag }}
       - name: Commit
         run: |
-          git diff --quiet && exit 0
+          git add Casks
+          git diff --cached --quiet && exit 0
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -am "figstudio $(sed -n 's/.*version "\(.*\)"/\1/p' Casks/figstudio.rb)"
+          git commit -m "figstudio $(sed -n 's/.*version "\(.*\)"/\1/p' Casks/figstudio.rb)"
           git push
