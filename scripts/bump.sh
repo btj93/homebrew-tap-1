@@ -9,6 +9,7 @@ tag=${1:-$(gh release view -R "$repo" --json tagName -q .tagName 2>/dev/null || 
 zip="figstudio-$tag-macos-arm64.zip"
 sha=$(gh release download "$tag" -R "$repo" -p SHA256SUMS -O - | awk -v f="$zip" '$2==f {print $1}')
 [ -n "$sha" ] || { echo "no checksum for $zip in $tag" >&2; exit 1; }
+mkdir -p Casks
 cat > Casks/figstudio.rb <<RB
 cask "figstudio" do
   version "${tag#v}"
